@@ -6,7 +6,7 @@ const db = {};
 const sequelize = new Sequelize(config.database, config.username,config.password,config)
 
 //khởi tạo db
-
+db.User =require("./user")(sequelize,Sequelize)
 
 Object.keys(db).forEach(modelName =>{
     if(db[modelName].associate){

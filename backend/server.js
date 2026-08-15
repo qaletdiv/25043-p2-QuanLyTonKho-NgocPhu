@@ -6,6 +6,7 @@ const session = require('express-session');
 const MySQLStrore = require('express-mysql-session')(session);
 const app = express();
 const config = require("./config//config");
+const authRouth = require("./route/authRoute.js");
 const requestLoggerMiddleware = require("./middleware/reqLogger.js")
 const errorHandleMiddleware = require("./middleware/errorHandler.js")
 const db = require("./model/index.js")
@@ -15,9 +16,11 @@ const port = process.env.PORT;
 app.use(requestLoggerMiddleware)
 app.use(express.json()); // convert body to json
 app.use(cookieParser());
-app.use(errorHandleMiddleware)
 // route o day
+app.use("/api/auth",authRouth);
 
+
+app.use(errorHandleMiddleware)
 
 db.sequelize.authenticate()
     .then(()=>{
