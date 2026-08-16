@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./Login.css";
+import logo from '../../assets/logo.png';
+
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -28,11 +30,10 @@ function Login() {
     <div className="login-page">
       <div className="login-container">
         <div className="login-brand">
-          <div className="brand-icon">
-            📦
+          <div className="title-logo">
+            <img src={logo} alt="Yasuo logo" className="logo" />
+            <h1>Yasuo</h1>
           </div>
-
-          <h1>Quản Lý Mua Hàng</h1>
           <p>Hệ thống quản lý mua hàng và tồn kho</p>
         </div>
 
@@ -84,7 +85,7 @@ function Login() {
         </div>
 
         <p className="login-footer">
-          © 2026 Purchase & Inventory Management System
+          ©2026 Purchase & Inventory Management System
         </p>
       </div>
     </div>
