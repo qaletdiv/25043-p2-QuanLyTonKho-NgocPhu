@@ -7,6 +7,7 @@ module.exports = {
         host: process.env.DB_HOST,
         port: process.env.DB_PORT
     },
+    production: {},
     env: process.env.NODE_ENV,
     sessionSecret: process.env.SESSION_SECRET,
 }
