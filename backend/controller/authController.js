@@ -2,7 +2,6 @@ const { User, Sequelize } = require("../model");
 const bcrypt = require("bcrypt");
 
 
-
 exports.register = async (req,res,next)=>{
     try {
         const {username,email,password} = req.body;
@@ -26,10 +25,41 @@ exports.register = async (req,res,next)=>{
             });
         }
 
-        if(error.name === "SequelizeUniqueConstraintError"){
-            const error = error.errors.map(err =>({msg: err.message,path:err.path}))
+        if(error.name === "SequelizeValidationError"){
+            const errors = error.errors.map(err =>({msg: err.message,path:err.path}))
             return res.status(400).json({errors})
         }
+        next(error)
+    }
+}
+
+
+exports.login = async (req,res,next)=>{
+    const {username,password}= req.body
+    if(!username || password){
+        return res.status(400).json({message:"username and password are required"})
+    }
+    try {
+        const user = await User.scope("withPassword").findOne({
+            where:{
+                username: username
+            }
+        })
+
+        if(!user){
+            return res.status(401).json({message:"invalid username or password"})
+        }
+
+        const isMatch = await bcrypt.compare(password,user.password);
+        if(!isMatch){
+            return res.status(401).json({message:"invalid username or password"})
+        }
+
+        req.session.userId = user.id;
+        res.status(200).json({
+            message:"login successfull"
+        })
+    } catch (error) {
         next(error)
     }
 }
