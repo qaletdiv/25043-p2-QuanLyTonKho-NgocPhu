@@ -16,6 +16,32 @@ const port = process.env.PORT;
 app.use(requestLoggerMiddleware)
 app.use(express.json()); // convert body to json
 app.use(cookieParser());
+const dbConfig = config[config.env]
+const sessionStoreOptions = {
+    host: dbConfig.host,
+    port: dbConfig.port,
+    user: dbConfig.username,
+    password: dbConfig.password,
+    database: dbConfig.database,
+    clearExpired: true,
+    checkExpirationInterval: 10*60*1000, //10p
+    expiration: 1*60*60*1000,
+}
+
+const sessionStore = new MySQLStrore(sessionStoreOptions)
+app.use(session({
+    secret: config.sessionSecret,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie:{
+        secure: config.env === "production",
+        httpOnly: true,
+        maxAge: 1*60*60*1000, // khop voi expiration 
+    }
+}))
+
+
 // route o day
 app.use("/api/auth",authRouth);
 

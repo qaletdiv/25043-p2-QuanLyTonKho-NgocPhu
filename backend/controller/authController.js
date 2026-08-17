@@ -63,3 +63,24 @@ exports.login = async (req,res,next)=>{
         next(error)
     }
 }
+
+
+exports.logout = async (req,res,next)=>{
+    if(req.session){
+        return req.session.destroy(err=>{
+            if(err){
+                console.log("error",err)
+                next(next);
+            }
+            res.clearCookie("connect.sid");
+            return res.status(200).json({message:"logout successfull"})
+        })
+    }
+} 
+
+
+exports.getMe = async (req,res,next)=>{
+    res.json({
+        user:req.user
+    })
+}
