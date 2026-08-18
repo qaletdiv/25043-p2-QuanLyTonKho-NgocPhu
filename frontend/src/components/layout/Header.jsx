@@ -1,29 +1,82 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../services/authService";
+
+import {
+  logout,
+  getMe,
+} from "../../services/authService";
 
 function Header() {
   const navigate = useNavigate();
-  const logoutbtnActive = async ()=>{
+  const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const getInfo = async () => {
       try {
-        await logout();
-        navigate("/login")
+        const data = await getMe();
+        setUser(data.user);
+
       } catch (error) {
-        console.error("logout error:", error);
+        if (error.response.status === 401) {
+          alert("vui long dang nhap");
+          navigate("/login");
+        } else {
+          console.error(
+            "Something wrong in call API get info:",
+            error
+          );
+        }
       }
-  }
+    };
+    getInfo();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  const handleUserInfo = () => {
+    setIsOpen(false);
+    navigate("/user-info");
+  };
 
   return (
     <header className="header">
-
       <div className="header-right">
-        <div className="user-info">
-          <span className="user-name">Admin</span>
-        </div>
-
-        <button type="button" className="logout-button" onClick={logoutbtnActive}>
-          Đăng xuất
+        <button type="button" className="profile-button" onClick={() => setIsOpen(!isOpen)}>
+          <div className="profile-icon">
+            👤
+          </div>
+          <span className="profile-arrow">
+            ▼
+          </span>
         </button>
+
+        {isOpen && (
+          <div className="profile-dropdown">
+
+            <button type="button" className="dropdown-item" onClick={handleUserInfo}>
+              <span>
+                {user?.username}
+              </span>
+            </button>
+
+            <button type="button" className="dropdown-item logout-item" onClick={handleLogout}>
+              <span>
+                Đăng xuất
+              </span>
+            </button>
+          </div>
+        )}
+
       </div>
+
     </header>
   );
 }

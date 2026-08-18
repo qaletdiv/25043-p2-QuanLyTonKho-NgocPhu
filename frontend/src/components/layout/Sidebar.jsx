@@ -10,7 +10,7 @@ function Sidebar() {
 
       <nav className="sidebar-nav">
         <NavLink
-          to="/purchase-orders"
+          to="/purchaseorders"
           className={({ isActive }) =>
             `sidebar-link ${isActive ? "active" : ""}`
           }
