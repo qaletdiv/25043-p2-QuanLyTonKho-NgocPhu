@@ -1,12 +1,14 @@
 require("dotenv").config();
 
 const express = require('express');
+const cors = require("cors");
 const cookieParser = require("cookie-parser")
 const session = require('express-session');
 const MySQLStrore = require('express-mysql-session')(session);
 const app = express();
-const config = require("./config//config");
-const authRouth = require("./route/authRoute.js");
+const config = require("./config/config");
+const authRoute = require("./route/authRoute.js");
+const userRoute = require("./route/userRoute.js");
 const requestLoggerMiddleware = require("./middleware/reqLogger.js")
 const errorHandleMiddleware = require("./middleware/errorHandler.js")
 const db = require("./model/index.js")
@@ -14,6 +16,12 @@ const port = process.env.PORT;
 
 
 app.use(requestLoggerMiddleware)
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        credentials: true
+    })
+);
 app.use(express.json()); // convert body to json
 app.use(cookieParser());
 const dbConfig = config[config.env]
@@ -43,8 +51,8 @@ app.use(session({
 
 
 // route o day
-app.use("/api/auth",authRouth);
-
+app.use("/api/auth",authRoute);
+app.use("/api/user",userRoute)
 
 app.use(errorHandleMiddleware)
 

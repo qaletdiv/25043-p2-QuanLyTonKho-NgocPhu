@@ -1,29 +1,48 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import logo from '../../assets/logo.png';
-
+import logo from "../../assets/logo.png";
+import { login } from "../../services/authService";
 
 function Login() {
-  const [username, setUsername] = useState("");
+  const [emailOrusername, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError("");
-
-    if (!username.trim() || !password.trim()) {
-      setError("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+    // Validate frontend
+    if (!emailOrusername.trim() || !password.trim()) {
+      setError(
+        "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu."
+      );
       return;
     }
 
-    // Tạm thời chỉ kiểm tra giao diện.
-    // Sau này sẽ thay bằng API Node.js.
-    console.log({
-      username,
-      password,
-    });
+    try {
+      setLoading(true);
+      // Gọi API Backend
+      const data = await login(
+        emailOrusername,
+        password
+      );
+      console.log("Login success:", data);
+      navigate("/purchaseorders");
+
+
+    } catch (error) {
+      console.error("Login error:", error);
+      const message =
+        error.response?.data?.message ||
+        "Đăng nhập thất bại. Vui lòng thử lại.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,18 +50,22 @@ function Login() {
       <div className="login-container">
         <div className="login-brand">
           <div className="title-logo">
-            <img src={logo} alt="Yasuo logo" className="logo" />
+            <img
+              src={logo}
+              alt="Yasuo logo"
+              className="logo"
+            />
             <h1>Yasuo</h1>
           </div>
-          <p>Hệ thống quản lý mua hàng và tồn kho</p>
+          <p>
+            Hệ thống quản lý mua hàng và tồn kho
+          </p>
         </div>
-
         <div className="login-card">
           <h2>Đăng nhập</h2>
           <p className="login-description">
             Đăng nhập để tiếp tục sử dụng hệ thống
           </p>
-
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="username">
@@ -53,12 +76,17 @@ function Login() {
                 id="username"
                 type="text"
                 placeholder="Nhập tên đăng nhập hoặc email"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={emailOrusername}
+                onChange={(e) =>
+                  setUsername(e.target.value)
+                }
+                disabled={loading}
               />
+
             </div>
 
             <div className="form-group">
+
               <label htmlFor="password">
                 Mật khẩu
               </label>
@@ -68,8 +96,12 @@ function Login() {
                 type="password"
                 placeholder="Nhập mật khẩu"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                disabled={loading}
               />
+
             </div>
 
             {error && (
@@ -78,15 +110,24 @@ function Login() {
               </div>
             )}
 
-            <button type="submit" className="login-button">
-              Đăng nhập
+            <button
+              type="submit"
+              className="login-button"
+              disabled={loading}
+            >
+              {loading
+                ? "Đang đăng nhập..."
+                : "Đăng nhập"}
             </button>
+
           </form>
+
         </div>
 
         <p className="login-footer">
           ©2026 Purchase & Inventory Management System
         </p>
+
       </div>
     </div>
   );

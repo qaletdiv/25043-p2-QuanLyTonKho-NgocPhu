@@ -19,12 +19,11 @@ const registerValidator = ()=>{
 
 const loginValidator = ()=>{
     return [
-        body("emailOrUsername")
+        body("emailOrusername")
             .notEmpty().withMessage("username ko duoc trong"),
 
         body("password")
             .notEmpty().withMessage("password ko duoc de trong")
-
 
     ]
 }
