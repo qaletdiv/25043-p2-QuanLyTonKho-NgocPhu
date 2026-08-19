@@ -18,15 +18,15 @@ function Header() {
         setUser(data.user);
 
       } catch (error) {
-        if (error.response.status === 401) {
-          alert("vui long dang nhap");
-          navigate("/login");
-        } else {
-          console.error(
-            "Something wrong in call API get info:",
-            error
-          );
+        if (error.response?.status === 401) {
+          navigate("/login", {
+            state: {
+              message: "vui lòng đăng nhập"
+            }
+          });
         }
+        console.error("Something wrong in call API get info:", error);
+
       }
     };
     getInfo();

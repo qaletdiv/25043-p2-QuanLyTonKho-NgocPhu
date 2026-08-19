@@ -1,17 +1,32 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import logo from "../../assets/logo.png";
-import { login } from "../../services/authService";
+import { getMe, login } from "../../services/authService";
 
 function Login() {
   const [emailOrusername, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
 
+  useEffect(() =>{
+    const isHaveSession = async () =>{
+      try {
+        const check = await getMe();
+        if(check){
+          navigate("/purchaseorders");
+        }
+      } catch (error) {
+        if(error.response?.status === 401){
+          return 
+        }
+        console.error("Check session error:", error);
+      }
+    };
+    isHaveSession();
+  },[]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -22,10 +37,8 @@ function Login() {
       );
       return;
     }
-
     try {
       setLoading(true);
-      // Gọi API Backend
       const data = await login(
         emailOrusername,
         password

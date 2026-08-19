@@ -1,10 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login/Login";
 import MainLayout from "../components/layout/MainLayout";
+import PurchaseOrders from "../pages/PurchaseOrders/PurchaseOrders"
 
-function PurchaseOrders() {
-  return <h2>Danh sách Đơn mua hàng</h2>;
-}
 
 function Products() {
   return <h2>Danh sách Sản phẩm</h2>;
@@ -25,7 +23,8 @@ function POS() {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<PurchaseOrders />} />
+      <Route path="/login" element={<Login/>}/>
       <Route element={<MainLayout />}>
         <Route path="/purchaseorders" element={<PurchaseOrders />}/>
         <Route path="/products" element={<Products />}/>

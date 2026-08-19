@@ -1,5 +1,4 @@
-const {PurchaseOrder , Sequelize} = require("../model");
-const purchaseOrder = require("../model/purchaseOrder");
+const {PurchaseOrder,Supplier,User , Sequelize} = require("../model");
 
 exports.getOrders = async (req,res,next)=>{
     try {
@@ -10,21 +9,29 @@ exports.getOrders = async (req,res,next)=>{
         if(search){
             where[Sequelize.Op.or] = [
                 {
-                    title: {[Sequelize.Op.like]:`%${search}%`}
+                    purchaseCode: {[Sequelize.Op.like]:`%${search}%`}
                 },
                 {
-                    content: {[Sequelize.Op.like]:`%${search}%`}
+                    '$supplier.supplierName$': {[Sequelize.Op.like]:`%${search}%`} //dùng association tham chiếu tới cột của bảng đã JOIN
                 }
             ]
         }
-        const orders = await PurchaseOrder.findAll({
+        const orders = await PurchaseOrder.findAndCountAll({   // cần dùng findcountall là để trả về bản ghi ko áp limit và có áp limit
+            // trả lại total page được tính cho frontend phân trang
+            // find chỉ trả rows
             where,
+            include:[
+                {model:Supplier,as:'supplier',attributes:['id','supplierName']},
+                {model:User,as:'assignedEmployee',attributes:['id','username']}
+            ],
+            // khai báo model supplier với alias là supplier để Sequelize biết cần left join bảng nào
             limit:pageSize,
-            offset:(currentPage-1)*pageSize
+            offset:(currentPage-1)*pageSize,
+            subQuery: false, // bắt buộc khi where tham chiếu tới field của bảng include kèm limit/offset
         });
 
         if(!orders){
-            return res.status(400).json({message:"ko tim thay don hang ton tai"});
+            return res.status(400).json([]);
         }
         
         res.json(orders);
