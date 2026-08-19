@@ -6,7 +6,5 @@ router.get("/Orders",
     getOrders
 )
 
-router.get("/findOrders",
-    findOrder
-)
+
 module.exports = router

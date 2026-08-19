@@ -5,24 +5,6 @@ exports.getOrders = async (req,res,next)=>{
     try {
         const pageSize = parseInt(req.query.limit) || 10;
         const currentPage = parseInt(req.query.page) || 1;
-        const orders = await PurchaseOrder.findAll({
-            limit:pageSize,
-            offset:(currentPage-1)*pageSize
-        });
-        if(!orders){
-            return res.status(400).json({message:"ko tim thay don hang ton tai"});
-        }
-        res.json(orders);
-    } catch (error) {
-        next(error)
-    }
-}
-
-
-exports.findOrder = async(req,res,next) =>{
-    try {
-        const pageSize = parseInt(req.query.limit) || 10;
-        const currentPage = parseInt(req.query.page) || 1;
         const search = req.query.search || "";
         const where = {};
         if(search){
@@ -35,18 +17,22 @@ exports.findOrder = async(req,res,next) =>{
                 }
             ]
         }
-
-        const order = await purchaseOrder.findAll({
+        const orders = await PurchaseOrder.findAll({
             where,
             limit:pageSize,
-            offset:(currentPage - 1) * pageSize,// lay luon ca 1 vi vay current page =1 - 1 = 0 offset bo qua 0
-        })
-        res.json(order);
+            offset:(currentPage-1)*pageSize
+        });
+
+        if(!orders){
+            return res.status(400).json({message:"ko tim thay don hang ton tai"});
+        }
         
+        res.json(orders);
     } catch (error) {
-        next(error);
+        next(error)
     }
 }
+
 //A3
 // exports.createOrder = async (req,res,next)=>{
 //     try {

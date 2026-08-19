@@ -43,7 +43,7 @@ function Header() {
 
   const handleUserInfo = () => {
     setIsOpen(false);
-    navigate("/user-info");
+    navigate("/userinfo");
   };
 
   return (

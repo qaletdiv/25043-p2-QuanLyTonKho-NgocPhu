@@ -33,12 +33,9 @@ function Login() {
       console.log("Login success:", data);
       navigate("/purchaseorders");
 
-
     } catch (error) {
       console.error("Login error:", error);
-      const message =
-        error.response?.data?.message ||
-        "Đăng nhập thất bại. Vui lòng thử lại.";
+      const message = error.response?.data?.message || "Đăng nhập thất bại. Vui lòng thử lại.";
       setError(message);
     } finally {
       setLoading(false);
