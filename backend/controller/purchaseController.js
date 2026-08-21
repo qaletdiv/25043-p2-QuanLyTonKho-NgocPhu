@@ -1,52 +1,45 @@
 const {PurchaseOrder,Supplier,User , Sequelize} = require("../model");
 
-exports.getOrders = async (req,res,next)=>{
+exports.getOrders = async (req, res, next) => {
     try {
         const pageSize = parseInt(req.query.limit) || 10;
         const currentPage = parseInt(req.query.page) || 1;
         const search = req.query.search || "";
         const where = {};
-        if(search){
-            where[Sequelize.Op.or] = [
-                {
-                    purchaseCode: {[Sequelize.Op.like]:`%${search}%`}
-                },
-                {
-                    '$supplier.supplierName$': {[Sequelize.Op.like]:`%${search}%`} //dùng association tham chiếu tới cột của bảng đã JOIN
-                }
-            ]
+        if (search) {
+            //  tìm các supplier_id có tên khớp search
+            const matchedSuppliers = await Supplier.findAll({
+                where: { supplierName: { [Op.like]: `%${search}%` } },
+                attributes: ['id'],
+            });
+            const supplierIds = matchedSuppliers.map(s => s.id);
+            
+            where[Op.or] = [
+                { purchaseCode: { [Op.like]: `%${search}%` } },
+                { supplier_id: { [Op.in]: supplierIds } }, 
+            ];
         }
-        const orders = await PurchaseOrder.findAndCountAll({   // cần dùng findcountall là để trả về bản ghi ko áp limit và có áp limit
-            // trả lại total page được tính cho frontend phân trang
-            // find chỉ trả rows
+
+        const orders = await PurchaseOrder.findAndCountAll({
             where,
-            include:[
-                {model:Supplier,as:'supplier',attributes:['id','supplierName']},
-                {model:User,as:'assignedEmployee',attributes:['id','username']}
-            ],
-            // khai báo model supplier với alias là supplier để Sequelize biết cần left join bảng nào
-            limit:pageSize,
-            offset:(currentPage-1)*pageSize,
-            subQuery: false, // bắt buộc khi where tham chiếu tới field của bảng include kèm limit/offset
+            include: [{ model: Supplier, as: 'supplier' }],
+            limit: pageSize,
+            offset: (currentPage - 1) * pageSize,
         });
 
-        if(!orders){
-            return res.status(400).json([]);
-        }
-        
-        res.json(orders);
+        res.json({ data: orders.rows, total: orders.count }); // trả cho front end 2 data 1 là orders 2 là trang đã tính
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+exports.createOrder = async (req,res,next)=>{
+    try {
+        const newOrder = await PurchaseOrder.create(req.body);
+        res.status(201).json(newOrder);
+
     } catch (error) {
         next(error)
     }
 }
-
-//A3
-// exports.createOrder = async (req,res,next)=>{
-//     try {
-//         const {purchaseCode,supplier_id,order_date,assigned_employee_id,total_cost,status}
-//         const newOrder = await PurchaseOrder.create();
-
-//     } catch (error) {
-        
-//     }
-// }

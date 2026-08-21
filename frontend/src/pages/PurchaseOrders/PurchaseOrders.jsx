@@ -82,13 +82,13 @@ function PurchaseOrders() {
 
 
   const handleCreate = () => {
-    navigate("/purchase-orders/new");
+    navigate("/orderDetail/new");
   };
 
 
 
   const handleOrderClick = (orderId) => {
-    navigate(`/purchase-orders/${orderId}`);
+    navigate(`/orderDetail/${orderId}`);
   };
 
 

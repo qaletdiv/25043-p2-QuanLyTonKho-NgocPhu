@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login/Login";
 import MainLayout from "../components/layout/MainLayout";
 import PurchaseOrders from "../pages/PurchaseOrders/PurchaseOrders"
+import PurchaseOrderDetail from "..//pages/PurchaseOrderDetail/PurchaseOrderDetail"
 
 
 function Products() {
@@ -27,6 +28,7 @@ function AppRoutes() {
       <Route path="/login" element={<Login/>}/>
       <Route element={<MainLayout />}>
         <Route path="/purchaseorders" element={<PurchaseOrders />}/>
+        <Route path="/orderDetail" element={<PurchaseOrderDetail />}/>
         <Route path="/products" element={<Products />}/>
         <Route  path="/suppliers" element={<Suppliers />}/>
         <Route  path="/inventory"  element={<Inventory />}/>
